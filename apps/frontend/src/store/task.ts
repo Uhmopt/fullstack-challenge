@@ -11,14 +11,19 @@ interface Task {
 
 interface TaskStore {
   tasks: Task[];
+  filteredTasks: Task[];
+  statusFilter: string;
   fetchTasks: () => Promise<void>;
   addTask: (title: string, description?: string) => Promise<void>;
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
+  setStatusFilter: (status: string) => void;
 }
 
-export const useTaskStore = create<TaskStore>((set) => ({
+export const useTaskStore = create<TaskStore>((set, get) => ({
   tasks: [],
+  filteredTasks: [],
+  statusFilter: "ALL",
 
   fetchTasks: async () => {
     const { token } = useAuthStore.getState();
@@ -27,6 +32,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
         headers: { Authorization: `Bearer ${token}` }, // ✅ Add token
     });
     set({ tasks: response.data });
+    get().setStatusFilter(get().statusFilter);
   },
 
   addTask: async (title, description) => {
@@ -39,6 +45,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
     );
     const newTask: Task = response.data; // Ensure response matches Task type
     set((state) => ({ tasks: [...state.tasks, newTask] })); 
+    get().setStatusFilter(get().statusFilter);
   },
 
   updateTask: async (id, updates) => {
@@ -50,6 +57,7 @@ export const useTaskStore = create<TaskStore>((set) => ({
     set((state) => ({
       tasks: state.tasks.map((task) => (task.id === id ? { ...task, ...updates } : task)),
     }));
+    get().setStatusFilter(get().statusFilter);
   },
 
   deleteTask: async (id) => {
@@ -60,5 +68,13 @@ export const useTaskStore = create<TaskStore>((set) => ({
       headers: { Authorization: `Bearer ${token}` }, // ✅ Add token
     });
     set((state) => ({ tasks: state.tasks.filter((task) => task.id !== id) }));
+    get().setStatusFilter(get().statusFilter);
+  },
+
+  setStatusFilter: (status) => {
+    const { tasks } = get();
+    const filteredTasks =
+      status === "ALL" ? tasks : tasks.filter((task) => task.status === status);
+    set({ statusFilter: status, filteredTasks });
   },
 }));
