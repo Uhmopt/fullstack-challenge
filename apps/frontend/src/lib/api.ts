@@ -1,7 +1,18 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import axios from 'axios';
 
-export async function fetchData(endpoint: string) {
-  const res = await fetch(`${API_URL}/${endpoint}`);
-  if (!res.ok) throw new Error("Failed to fetch");
-  return res.json();
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+export const api = axios.create({
+  baseURL: API_URL,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+    localStorage.setItem('accessToken', token);
+  } else {
+    delete api.defaults.headers.common['Authorization'];
+    localStorage.removeItem('accessToken');
+  }
+};
