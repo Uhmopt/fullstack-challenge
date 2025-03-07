@@ -2,6 +2,13 @@
 
 ## Setup Instructions
 
+### Database (PostgreSQL)
+- Ensure PostgreSQL is running
+- Run migrations (if needed)
+1. Navigate to `apps/backend`
+2. npx prisma db push
+3. npx prisma generate
+
 ### Backend (NestJS API)
 1. Navigate to `apps/backend`
 2. Install dependencies: `yarn install`
@@ -13,9 +20,6 @@
 2. Install dependencies: `yarn install`
 3. Start the development server: `yarn dev`
 
-### Database (PostgreSQL)
-- Ensure PostgreSQL is running
-- Run migrations (if needed)
 
 ### Assumptions
 - Using PostgreSQL for storage
