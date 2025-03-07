@@ -2,12 +2,14 @@ import { useTaskStore } from "../store/task";
 import { useEffect, useState } from "react";
 import EditTaskModal from "./EditTaskModal";
 import DeleteTaskModal from "./DeleteTaskModal";
+import TaskHistoryModal from "./TaskHistoryModal";
 
 export default function TaskList() {
-  const { tasks, fetchTasks, filteredTasks } = useTaskStore();
+  const { fetchTasks, filteredTasks } = useTaskStore();
   const [selectedTask, setSelectedTask] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   useEffect(() => {
     fetchTasks();
@@ -41,6 +43,15 @@ export default function TaskList() {
             >
               Delete
             </button>
+            <button
+              className="bg-gray-700 text-white px-3 py-1 rounded"
+              onClick={() => {
+                setSelectedTask(task);
+                setIsHistoryModalOpen(true);
+              }}
+            >
+              View History
+            </button>
           </div>
         </div>
       ))}
@@ -55,6 +66,11 @@ export default function TaskList() {
             task={selectedTask}
             isOpen={isDeleteModalOpen}
             onClose={() => setIsDeleteModalOpen(false)}
+          />
+           <TaskHistoryModal
+            task={selectedTask}
+            isOpen={isHistoryModalOpen}
+            onClose={() => setIsHistoryModalOpen(false)}
           />
         </>
       )}

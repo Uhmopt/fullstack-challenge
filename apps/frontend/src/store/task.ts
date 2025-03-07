@@ -9,8 +9,17 @@ interface Task {
   status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
 }
 
+interface TaskHistory {
+    id: string;
+    oldStatus: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+    newStatus: "PENDING" | "IN_PROGRESS" | "COMPLETED";
+    reason?: string;
+    createdAt: string;
+  }
+
 interface TaskStore {
   tasks: Task[];
+  taskHistory: TaskHistory[];
   filteredTasks: Task[];
   statusFilter: string;
   fetchTasks: () => Promise<void>;
@@ -18,11 +27,13 @@ interface TaskStore {
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   setStatusFilter: (status: string) => void;
+  fetchTaskHistory: (taskId: string) => Promise<void>;
 }
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
   tasks: [],
   filteredTasks: [],
+  taskHistory: [],
   statusFilter: "ALL",
 
   fetchTasks: async () => {
@@ -34,7 +45,16 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     set({ tasks: response.data });
     get().setStatusFilter(get().statusFilter);
   },
+  fetchTaskHistory: async (taskId) => {
+    const { token } = useAuthStore.getState();
+    if (!token) return;
 
+    const response = await api.get(`/tasks/${taskId}/history`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    set({ taskHistory: response.data });
+  },
   addTask: async (title, description) => {
     const { token } = useAuthStore.getState();
     if (!token) return;
