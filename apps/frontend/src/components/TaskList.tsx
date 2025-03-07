@@ -1,19 +1,15 @@
 import { useTaskStore } from "../store/task";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import EditTaskModal from "./EditTaskModal";
 import DeleteTaskModal from "./DeleteTaskModal";
 import TaskHistoryModal from "./TaskHistoryModal";
 
 export default function TaskList() {
-  const { fetchTasks, filteredTasks } = useTaskStore();
+  const { filteredTasks } = useTaskStore();
   const [selectedTask, setSelectedTask] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
 
   return (
     <div className="max-w-4xl mx-auto">

@@ -1,21 +1,28 @@
-import { useState } from "react";
-import { useAuthStore } from "../store/auth";
+import { useState, useEffect } from "react";
+import { useHydratedAuthStore } from "../store/auth";
 import { useRouter } from "next/router";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const login = useAuthStore((state) => state.login);
+  const { login, token, isHydrated } = useHydratedAuthStore();
   const router = useRouter();
+
+  useEffect(() => {
+      if (isHydrated && token) {
+        router.push("/task"); // ✅ Redirect only after authentication state is updated
+      }
+  }, [token, isHydrated]);
 
   const handleLogin = async () => {
     try {
       await login(email, password);
-      router.push("/profile");
     } catch (error) {
       alert("Login failed");
     }
   };
+
+  if (!isHydrated) return <p className="text-center">Loading...</p>;
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100">
@@ -28,6 +35,7 @@ export default function Login() {
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
         <div className="mt-4">
@@ -37,6 +45,7 @@ export default function Login() {
             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </div>
         <button
