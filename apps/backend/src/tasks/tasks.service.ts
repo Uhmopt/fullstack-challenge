@@ -21,14 +21,19 @@ export class TasksService {
   }
 
   async getTasks(page = 1, limit = 10, sortBy = 'createdAt') {
-    const tasks = await this.prisma.task.findMany({
-      where: { deletedAt: null },
-      orderBy: { [sortBy]: 'asc' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+    const [tasks, totalCount] = await Promise.all([
+      this.prisma.task.findMany({
+        where: { deletedAt: null },
+        orderBy: { [sortBy]: 'asc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.prisma.task.count({
+        where: { deletedAt: null },
+      }),
+    ]);
 
-    return tasks;
+    return { tasks, totalCount };
   }
 
   async getTaskById(id: string) {
