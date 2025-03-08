@@ -34,7 +34,7 @@ const TaskItem = ({ task, onActionChange }: TaskItemPropsType) => {
           {TASK_STATUSES[task.status]}
         </span>
       </div>
-      <p className='text-gray-600'>{task.description}</p>
+      <p className="text-gray-600 break-words whitespace-pre-wrap">{task.description}</p>
       <div className='mt-2 flex gap-2'>
         <button
           className='bg-blue-500 text-white px-3 py-1 rounded'
