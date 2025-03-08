@@ -22,12 +22,14 @@ interface TaskStore {
   taskHistory: TaskHistory[];
   filteredTasks: Task[];
   statusFilter: string;
+  searchQuery: string;
   fetchTasks: () => Promise<void>;
   addTask: (title: string, description?: string) => Promise<void>;
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   setStatusFilter: (status: string) => void;
   fetchTaskHistory: (taskId: string) => Promise<void>;
+  setSearchQuery: (query: string) => void;
 }
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
@@ -35,6 +37,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
   filteredTasks: [],
   taskHistory: [],
   statusFilter: "ALL",
+  searchQuery: "",
 
   fetchTasks: async () => {
     const { token } = useAuthStore.getState();
@@ -89,6 +92,32 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     });
     set((state) => ({ tasks: state.tasks.filter((task) => task.id !== id) }));
     get().setStatusFilter(get().statusFilter);
+  },
+  setSearchQuery: (query) => {
+    set({ searchQuery: query });
+    get().applyFilters(); // Reapply filters when search changes
+  },
+  
+  applyFilters: () => {
+    const { tasks, statusFilter, searchQuery } = get();
+
+    let filtered = tasks;
+
+    // Filter by status
+    if (statusFilter !== "ALL") {
+      filtered = filtered.filter((task) => task.status === statusFilter);
+    }
+
+    // Filter by title or description
+    if (searchQuery.trim()) {
+      filtered = filtered.filter(
+        (task) =>
+          task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (task.description && task.description.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    set({ filteredTasks: filtered });
   },
 
   setStatusFilter: (status) => {

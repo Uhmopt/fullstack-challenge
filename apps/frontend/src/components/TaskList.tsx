@@ -3,75 +3,52 @@ import { useState } from 'react'
 import EditTaskModal from './EditTaskModal'
 import DeleteTaskModal from './DeleteTaskModal'
 import TaskHistoryModal from './TaskHistoryModal'
+import { TaskActionType } from '@/types/task'
+import TaskItem from './TaskItem'
 
 export default function TaskList() {
   const { filteredTasks } = useTaskStore()
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
+  const [modalStatus, setModalStatus] = useState({
+    edit: false,
+    delete: false,
+    history: false,
+  })
+
+  const handleModalClose = (key: TaskActionType) => {
+    setModalStatus((prev) => ({ ...prev, [key]: false }))
+  }
+
+  const handleActionChange = (key: TaskActionType, task: Task) => {
+    setSelectedTask(task)
+    setModalStatus((prev) => ({ ...prev, [key]: true }))
+  }
 
   return (
-    <div className='max-w-4xl'>
+    <div className='w-full'>
       {filteredTasks.map((task) => (
-        <div
+        <TaskItem
           key={task.id}
-          className='w-full bg-white shadow p-4 rounded-lg mb-2'
-        >
-          <h3 className='font-semibold'>{task.title}</h3>
-          <p className='text-gray-600'>{task.description}</p>
-          <span
-            className={`px-3 py-1 rounded-lg text-white ${task.status === 'PENDING' ? 'bg-yellow-500' : task.status === 'IN_PROGRESS' ? 'bg-blue-500' : 'bg-green-500'}`}
-          >
-            {task.status}
-          </span>
-          <div className='mt-2 flex'>
-            <button
-              className='bg-blue-500 text-white px-3 py-1 rounded'
-              onClick={() => {
-                setSelectedTask(task)
-                setIsEditModalOpen(true)
-              }}
-            >
-              Edit
-            </button>
-            <button
-              className='bg-red-500 text-white px-3 py-1 rounded'
-              onClick={() => {
-                setSelectedTask(task)
-                setIsDeleteModalOpen(true)
-              }}
-            >
-              Delete
-            </button>
-            <button
-              className='bg-gray-700 text-white px-3 py-1 rounded'
-              onClick={() => {
-                setSelectedTask(task)
-                setIsHistoryModalOpen(true)
-              }}
-            >
-              View History
-            </button>
-          </div>
-        </div>
+          task={task}
+          onActionChange={handleActionChange}
+        />
       ))}
       {selectedTask && (
         <>
           <EditTaskModal
             task={selectedTask}
-            isOpen={isEditModalOpen}
-            onClose={() => setIsEditModalOpen(false)}
+            isOpen={modalStatus.edit}
+            onClose={() => handleModalClose('edit')}
           />
           <DeleteTaskModal
             task={selectedTask}
-            isOpen={isDeleteModalOpen}
-            onClose={() => setIsDeleteModalOpen(false)}
+            isOpen={modalStatus.delete}
+            onClose={() => handleModalClose('delete')}
           />
           <TaskHistoryModal
             task={selectedTask}
-            isOpen={isHistoryModalOpen}
-            onClose={() => setIsHistoryModalOpen(false)}
+            isOpen={modalStatus.history}
+            onClose={() => handleModalClose('history')}
           />
         </>
       )}
