@@ -2,14 +2,14 @@ import { create } from "zustand";
 import { api } from "../lib/api";
 import { useAuthStore } from "./auth";
 
-interface Task {
+export interface Task {
   id: string;
   title: string;
   description?: string;
   status: "PENDING" | "IN_PROGRESS" | "COMPLETED";
 }
 
-interface TaskHistory {
+export interface TaskHistory {
     id: string;
     oldStatus: "PENDING" | "IN_PROGRESS" | "COMPLETED";
     newStatus: "PENDING" | "IN_PROGRESS" | "COMPLETED";

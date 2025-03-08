@@ -1,49 +1,54 @@
-import { useTaskStore } from "../store/task";
-import { useState } from "react";
-import EditTaskModal from "./EditTaskModal";
-import DeleteTaskModal from "./DeleteTaskModal";
-import TaskHistoryModal from "./TaskHistoryModal";
+import { Task, useTaskStore } from '../store/task'
+import { useState } from 'react'
+import EditTaskModal from './EditTaskModal'
+import DeleteTaskModal from './DeleteTaskModal'
+import TaskHistoryModal from './TaskHistoryModal'
 
 export default function TaskList() {
-  const { filteredTasks } = useTaskStore();
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const { filteredTasks } = useTaskStore()
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false)
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className='max-w-4xl'>
       {filteredTasks.map((task) => (
-        <div key={task.id} className="bg-white shadow p-4 rounded-lg mb-2">
-          <h3 className="font-semibold">{task.title}</h3>
-          <p className="text-gray-600">{task.description}</p>
-          <span className={`px-3 py-1 rounded-lg text-white ${task.status === "PENDING" ? "bg-yellow-500" : task.status === "IN_PROGRESS" ? "bg-blue-500" : "bg-green-500"}`}>
+        <div
+          key={task.id}
+          className='w-full bg-white shadow p-4 rounded-lg mb-2'
+        >
+          <h3 className='font-semibold'>{task.title}</h3>
+          <p className='text-gray-600'>{task.description}</p>
+          <span
+            className={`px-3 py-1 rounded-lg text-white ${task.status === 'PENDING' ? 'bg-yellow-500' : task.status === 'IN_PROGRESS' ? 'bg-blue-500' : 'bg-green-500'}`}
+          >
             {task.status}
           </span>
-          <div className="mt-2 flex">
+          <div className='mt-2 flex'>
             <button
-              className="bg-blue-500 text-white px-3 py-1 rounded"
+              className='bg-blue-500 text-white px-3 py-1 rounded'
               onClick={() => {
-                setSelectedTask(task);
-                setIsEditModalOpen(true);
+                setSelectedTask(task)
+                setIsEditModalOpen(true)
               }}
             >
               Edit
             </button>
             <button
-              className="bg-red-500 text-white px-3 py-1 rounded"
+              className='bg-red-500 text-white px-3 py-1 rounded'
               onClick={() => {
-                setSelectedTask(task);
-                setIsDeleteModalOpen(true);
+                setSelectedTask(task)
+                setIsDeleteModalOpen(true)
               }}
             >
               Delete
             </button>
             <button
-              className="bg-gray-700 text-white px-3 py-1 rounded"
+              className='bg-gray-700 text-white px-3 py-1 rounded'
               onClick={() => {
-                setSelectedTask(task);
-                setIsHistoryModalOpen(true);
+                setSelectedTask(task)
+                setIsHistoryModalOpen(true)
               }}
             >
               View History
@@ -63,7 +68,7 @@ export default function TaskList() {
             isOpen={isDeleteModalOpen}
             onClose={() => setIsDeleteModalOpen(false)}
           />
-           <TaskHistoryModal
+          <TaskHistoryModal
             task={selectedTask}
             isOpen={isHistoryModalOpen}
             onClose={() => setIsHistoryModalOpen(false)}
@@ -71,5 +76,5 @@ export default function TaskList() {
         </>
       )}
     </div>
-  );
+  )
 }
